@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Plataforma de downloads exclusivos da PassiTech">
+    <title>PassiTech - Plataforma de Downloads</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis de cores */
+        :root {
+            --dark-bg: #1a1a1a;
+            --darker-bg: #121212;
+            --primary-green: #2ecc71;
+            --primary-hover: #27ae60;
+            --secondary-green: #1abc9c;
+            --text-light: #ecf0f1;
+            --text-muted: #bdc3c7;
+            --card-bg: rgba(30, 30, 30, 0.8);
+            --card-border: rgba(46, 204, 113, 0.2);
+            --error-red: #e74c3c;
+            --warning-yellow: #f39c12;
+        }
+
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Efeito de gradiente sutil no fundo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                      rgba(26, 26, 26, 0.95) 0%, 
+                      rgba(18, 18, 18, 0.98) 100%);
+            z-index: -1;
+        }
+
+        /* Container principal */
+        .content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            -webkit-backdrop-filter: blur(8px); /* Adicionado prefixo para Chrome */
+            backdrop-filter: blur(8px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Logo */
+        #logo {
+            width: 180px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 4px 8px rgba(46, 204, 113, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        #logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Títulos */
+        h1 {
+            color: var(--primary-green);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: var(--secondary-green);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: var(--text-light);
+            font-size: 1.4rem;
+            margin: 30px 0 15px;
+            font-weight: 500;
+        }
+
+        /* Botões */
+        button, .btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        button::after, .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        button:hover::after, .btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-green);
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-hover) 100%);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-green);
+            background: linear-gradient(135deg, var(--secondary-green) 0%, #16a085 100%);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(26, 188, 156, 0.3);
+        }
+
+        .btn-danger {
+            background-color: var(--error-red);
+            background: linear-gradient(135deg, var(--error-red) 0%, #c0392b 100%);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(231, 76, 60, 0.3);
+        }
+
+        /* Formulários */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="file"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        input[type="file"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+        }
+
+        /* Tabela de arquivos */
+        .files-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .files-table th, .files-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .files-table th {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        .files-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        .file-size {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Alertas */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid var(--primary-green);
+            color: var(--text-light);
+        }
+
+        .alert-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--error-red);
+            color: var(--text-light);
+        }
+
+        .alert-warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            border-left: 4px solid var(--warning-yellow);
+            color: var(--text-light);
+        }
+
+        /* Abas */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-green);
+            color: var(--primary-green);
+        }
+
+        .tab:hover:not(.active) {
+            border-bottom: 3px solid var(--secondary-green);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary-green), var(--secondary-green));
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Ícones */
+        .icon {
+            width: 20px;
+            height: 20px;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+        /* Tela de inscrição */
+        .subscribe-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--darker-bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .subscribe-content {
+            max-width: 600px;
+            width: 100%;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .subscribe-content h1 {
+            color: var(--primary-green);
+            margin-bottom: 30px;
+        }
+
+        .subscribe-content p {
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .subscribe-btn {
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .content, .about, .subscribe-content {
+                padding: 30px;
+                margin: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .files-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content, .about, .subscribe-content {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            #logo {
+                width: 140px;
+            }
+            
+            button, .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                width: 100%;
+            }
+
+            .file-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tela de inscrição (aparece primeiro) -->
+    <div id="subscribeScreen" class="subscribe-screen">
+        <div class="subscribe-content">
+            <img id="logo" src="LOGO.png" alt="Logo PassiTech" title="PassiTech">
+            <h1>Bem-vindo à Plataforma de Downloads PassiTech</h1>
+            <p>Para acessar nossos arquivos exclusivos, por favor inscreva-se no nosso canal do YouTube. É rápido, gratuito e nos ajuda a continuar criando conteúdo de qualidade!</p>
+            
+            <button id="subscribeButton" class="btn-primary subscribe-btn" onclick="subscribeToChannel()">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                </svg>
+                Inscreva-se no Canal PassiTech
+            </button>
+            
+            <p><small>Após se inscrever, você será redirecionado automaticamente para a plataforma.</small></p>
+        </div>
+    </div>
+
+    <!-- Conteúdo principal (escondido inicialmente) -->
+    <div id="mainContent" style="display: none;">
+        <div class="content">
+            <!-- Logo do Canal -->
+            <img id="logo" src="LOGO.png" alt="Logo PassiTech" title="PassiTech">
+
+            <!-- Título -->
+            <h1>Plataforma de Downloads PassiTech</h1>
+
+            <!-- Login Form (hidden by default, shown via button) -->
+            <div id="loginFormContainer" style="display: none;">
+                <h2>Área do Administrador</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Usuário</label>
+                        <input type="text" id="username" required placeholder="Digite seu usuário">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" required placeholder="Digite sua senha">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                        </svg>
+                        Entrar
+                    </button>
+                    <button type="button" onclick="hideLoginForm()" class="btn-secondary" style="margin-left: 10px;">
+                        Cancelar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Main Content (visible by default) -->
+            <div id="contentAfterLogin">
+                <!-- Botão de login para admin -->
+                <button id="adminLoginBtn" onclick="showLoginForm()" class="btn-secondary" style="margin-bottom: 20px;">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                    Acesso Administrativo
+                </button>
+
+                <!-- Mensagens -->
+                <div id="messageContainer"></div>
+
+                <!-- Downloads Section -->
+                <div id="downloads">
+                    <h2>Arquivos Disponíveis</h2>
+                    <p>Selecione abaixo o arquivo que deseja baixar:</p>
+                    
+                    <table class="files-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tamanho</th>
+                                <th>Data</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filesList">
+                            <!-- Arquivos serão carregados via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Admin Section (hidden by default) -->
+                <div id="adminSection" style="display: none;">
+                    <h2>Gerenciamento de Arquivos</h2>
+                    
+                    <div class="tabs">
+                        <div class="tab active" onclick="openAdminTab(event, 'upload')">Enviar Arquivos</div>
+                        <div class="tab" onclick="openAdminTab(event, 'manage')">Gerenciar</div>
+                        <div class="tab" onclick="openAdminTab(event, 'backup')">Backup</div>
+                        <div class="tab" onclick="logout()">Sair</div>
+                    </div>
+
+                    <div id="upload" class="tab-content active">
+                        <h3>Enviar Novo Arquivo</h3>
+                        <p>Preencha os detalhes do arquivo que deseja disponibilizar:</p>
+                        
+                        <form id="uploadForm">
+                            <div class="form-group">
+                                <label for="fileTitle">Título do Arquivo</label>
+                                <input type="text" id="fileTitle" required placeholder="Ex: Manual de Instruções">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fileDescription">Descrição</label>
+                                <textarea id="fileDescription" rows="3" placeholder="Descreva o conteúdo do arquivo"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fileUpload">Selecione o Arquivo</label>
+                                <input type="file" id="fileUpload" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="requireSubscription">
+                                    <input type="checkbox" id="requireSubscription"> Requer inscrição no canal para download
+                                </label>
+                            </div>
+                            
+                            <div class="progress-container" style="display: none;">
+                                <div class="progress-bar" id="uploadProgress"></div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Enviar Arquivo
+                            </button>
+                        </form>
+                    </div>
+
+                    <div id="manage" class="tab-content">
+                        <h3>Gerenciar Arquivos Existentes</h3>
+                        <p>Visualize, edite ou remova arquivos:</p>
+                        
+                        <table class="files-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Downloads</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manageFilesList">
+                                <!-- Arquivos para gerenciamento serão carregados via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="backup" class="tab-content">
+                        <h3>Backup e Restauração</h3>
+                        <p>Faça backup dos seus arquivos ou restaure de um backup existente:</p>
+                        
+                        <div class="form-group">
+                            <button onclick="exportDatabase()" class="btn-primary">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                </svg>
+                                Exportar Backup
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="backupFile">Importar Backup</label>
+                            <input type="file" id="backupFile" accept=".json">
+                            <button onclick="importDatabase()" class="btn-secondary" style="margin-top: 10px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Importar Backup
+                            </button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button onclick="resetDatabase()" class="btn-danger">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                                </svg>
+                                Resetar Banco de Dados
+                            </button>
+                            <p><small>Isso irá apagar todos os arquivos e configurações.</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção Sobre Nós -->
+        <div class="about">
+            <h2>Sobre a PassiTech</h2>
+            <p>A PassiTech é uma assistência técnica especializada, fundada em 2020. Desde então, temos ajudado milhares de pessoas a resolver problemas com seus dispositivos, oferecendo soluções práticas e eficientes. Nosso objetivo é proporcionar o melhor atendimento técnico, com qualidade e confiança, atendendo sempre às necessidades de nossos clientes.</p>
+            <p>Com uma equipe altamente capacitada e comprometida, a PassiTech continua a crescer e a oferecer serviços de excelência em diversas áreas da tecnologia. Nossa missão é simplificar a tecnologia para todos, tornando soluções complexas em experiências simples e acessíveis.</p>
+            <p>Esta plataforma foi criada para compartilhar arquivos exclusivos com nossos clientes, incluindo manuais, ferramentas e recursos especiais.</p>
+        </div>
+
+        <!-- Modal para confirmação -->
+        <div id="confirmModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background-color: var(--card-bg); padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;">
+                <h3 id="modalTitle">Confirmar ação</h3>
+                <p id="modalMessage">Tem certeza que deseja realizar esta ação?</p>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button id="modalCancel" class="btn-secondary" style="margin: 0;">Cancelar</button>
+                    <button id="modalConfirm" class="btn-danger" style="margin: 0;">Confirmar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para download com inscrição -->
+        <div id="subscribeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background-color: var(--card-bg); padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;">
+                <h3>Download Exclusivo</h3>
+                <p>Este arquivo está disponível apenas para inscritos no nosso canal do YouTube. Por favor, inscreva-se para liberar o download.</p>
+                
+                <button id="subscribeBtn" class="btn-primary" style="width: 100%; margin-top: 20px;">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                    </svg>
+                    Inscreva-se no Canal PassiTech
+                </button>
+                
+                <div id="downloadAfterSubscribe" style="display: none; margin-top: 20px; text-align: center;">
+                    <p>Obrigado por se inscrever! Você já pode baixar o arquivo.</p>
+                    <a id="downloadLink" href="#" class="btn-secondary" style="width: 100%;">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        Baixar Agora
+                    </a>
+                </div>
+                
+                <button id="alreadySubscribed" class="btn-secondary" style="width: 100%; margin-top: 10px;">
+                    Já sou inscrito
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do localStorage
+        const STORAGE_KEY = 'passitech_downloads';
+        const SUBSCRIPTION_KEY = 'passitech_subscribed';
+
+        // Credenciais do administrador
+        const ADMIN_CREDENTIALS = {
+            username: "vitor",
+            password: "vitor98@"
+        };
+
+        // Variáveis globais
+        let filesDatabase = [];
+        let currentFileToDownload = null;
+        let currentFileToDelete = null;
+        let currentFileToEdit = null;
+        let isAdminLoggedIn = false;
+        let isSubscribed = localStorage.getItem(SUBSCRIPTION_KEY) === 'true';
+
+        // Função para carregar dados do localStorage
+        function loadFromStorage() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    filesDatabase = JSON.parse(savedData);
+                } catch (e) {
+                    console.error('Erro ao carregar dados do localStorage:', e);
+                    resetDatabase();
+                }
+            } else {
+                // Dados iniciais padrão
+                filesDatabase = [
+                    {
+                        id: 1,
+                        title: "Manual de Instruções",
+                        description: "Manual completo do produto XYZ",
+                        filename: "manual_instrucoes.pdf",
+                        size: "2.4 MB",
+                        uploadDate: new Date().toISOString().split('T')[0],
+                        downloads: 0,
+                        requiresSubscription: false,
+                        fileUrl: null
+                    },
+                    {
+                        id: 2,
+                        title: "Ferramenta de Diagnóstico",
+                        description: "Software para diagnóstico de problemas",
+                        filename: "diagnostico_tool.exe",
+                        size: "15.7 MB",
+                        uploadDate: new Date().toISOString().split('T')[0],
+                        downloads: 0,
+                        requiresSubscription: true,
+                        fileUrl: null
+                    }
+                ];
+                saveToStorage();
+            }
+        }
+
+        // Função para salvar dados no localStorage
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(filesDatabase));
+        }
+
+        // Função para exportar banco de dados
+        function exportDatabase() {
+            const dataStr = JSON.stringify(filesDatabase, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `passitech-backup-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showMessage('success', 'Backup exportado com sucesso!');
+        }
+
+        // Função para importar banco de dados
+        function importDatabase() {
+            const fileInput = document.getElementById('backupFile');
+            if (!fileInput.files.length) {
+                showMessage('error', 'Por favor, selecione um arquivo de backup.');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedData)) {
+                        throw new Error('Formato de backup inválido');
+                    }
+                    
+                    document.getElementById('modalTitle').textContent = 'Confirmar Importação';
+                    document.getElementById('modalMessage').textContent = `Tem certeza que deseja importar este backup? Isso substituirá todos os arquivos atuais.`;
+                    document.getElementById('modalConfirm').className = 'btn-primary';
+                    document.getElementById('modalConfirm').textContent = 'Importar';
+                    
+                    document.getElementById('modalConfirm').onclick = function() {
+                        filesDatabase = importedData;
+                        saveToStorage();
+                        loadFilesList();
+                        if (isAdminLoggedIn) {
+                            loadManageFilesList();
+                        }
+                        showMessage('success', 'Backup importado com sucesso!');
+                        document.getElementById('confirmModal').style.display = 'none';
+                        fileInput.value = '';
+                    };
+                    
+                    document.getElementById('confirmModal').style.display = 'flex';
+                } catch (e) {
+                    showMessage('error', 'Erro ao importar backup: ' + e.message);
+                    console.error(e);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Função para resetar banco de dados
+        function resetDatabase() {
+            document.getElementById('modalTitle').textContent = 'Confirmar Reset';
+            document.getElementById('modalMessage').textContent = 'Tem certeza que deseja resetar o banco de dados? Todos os arquivos e configurações serão perdidos.';
+            document.getElementById('modalConfirm').className = 'btn-danger';
+            document.getElementById('modalConfirm').textContent = 'Resetar';
+            
+            document.getElementById('modalConfirm').onclick = function() {
+                localStorage.removeItem(STORAGE_KEY);
+                loadFromStorage();
+                loadFilesList();
+                if (isAdminLoggedIn) {
+                    loadManageFilesList();
+                }
+                showMessage('success', 'Banco de dados resetado com sucesso!');
+                document.getElementById('confirmModal').style.display = 'none';
+            };
+            
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        // Função para exibir mensagens
+        function showMessage(type, message) {
+            const container = document.getElementById('messageContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            
+            let iconPath = '';
+            if (type === 'success') {
+                iconPath = 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z';
+            } else if (type === 'error') {
+                iconPath = 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z';
+            } else {
+                iconPath = 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z';
+            }
+            
+            alert.innerHTML = `
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="${iconPath}"/>
+                </svg>
+                ${message}
+            `;
+            
+            container.appendChild(alert);
+            
+            // Remove a mensagem após 5 segundos
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        }
+
+        // Função para formatar a data
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('pt-BR', options);
+        }
+
+        // Função para formatar o tamanho do arquivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // Função para carregar a lista de arquivos
+        async function loadFilesList() {
+            try {
+                const filesList = document.getElementById('filesList');
+                filesList.innerHTML = '';
+                
+                filesDatabase.forEach(file => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <strong>${file.title}</strong><br>
+                            <small style="color: var(--text-muted);">${file.description}</small>
+                        </td>
+                        <td class="file-size">${file.size}</td>
+                        <td>${formatDate(file.uploadDate)}</td>
+                        <td class="file-actions">
+                            <button onclick="prepareDownload(${file.id})" class="btn-secondary" style="padding: 8px 12px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                </svg>
+                                Baixar
+                            </button>
+                        </td>
+                    `;
+                    
+                    filesList.appendChild(row);
+                });
+            } catch (error) {
+                showMessage('error', 'Erro ao carregar arquivos');
+                console.error(error);
+            }
+        }
+
+        // Função para carregar a lista de gerenciamento
+        async function loadManageFilesList() {
+            try {
+                const manageList = document.getElementById('manageFilesList');
+                manageList.innerHTML = '';
+                
+                filesDatabase.forEach(file => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>
+                            <strong>${file.title}</strong><br>
+                            <small style="color: var(--text-muted);">${file.filename}</small>
+                        </td>
+                        <td>${file.downloads}</td>
+                        <td>${file.requiresSubscription ? 'Inscrição requerida' : 'Livre'}</td>
+                        <td class="file-actions">
+                            <button onclick="editFile(${file.id})" class="btn-secondary" style="padding: 8px 12px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteFile(${file.id})" class="btn-danger" style="padding: 8px 12px;">
+                                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+                    
+                    manageList.appendChild(row);
+                });
+            } catch (error) {
+                showMessage('error', 'Erro ao carregar arquivos para gerenciamento');
+                console.error(error);
+            }
+        }
+
+        // Função para preparar o download
+        function prepareDownload(fileId) {
+            const file = filesDatabase.find(f => f.id === fileId);
+            if (!file) return;
+            
+            currentFileToDownload = file;
+            
+            if (file.requiresSubscription && !isSubscribed) {
+                document.getElementById('subscribeModal').style.display = 'flex';
+            } else {
+                initiateDownload(file);
+            }
+        }
+
+        // Função para iniciar o download
+        async function initiateDownload(file) {
+            try {
+                file.downloads++;
+                saveToStorage();
+                
+                if (isAdminLoggedIn) {
+                    loadManageFilesList();
+                }
+                
+                if (file.fileUrl) {
+                    const a = document.createElement('a');
+                    a.href = file.fileUrl;
+                    a.download = file.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    showMessage('success', `Download iniciado: ${file.title}`);
+                } else {
+                    showMessage('error', 'Arquivo não encontrado para download');
+                }
+            } catch (error) {
+                showMessage('error', 'Erro ao baixar arquivo');
+                console.error(error);
+            }
+        }
+
+        // Função para confirmar exclusão de arquivo
+        function confirmDeleteFile(fileId) {
+            currentFileToDelete = fileId;
+            const file = filesDatabase.find(f => f.id === fileId);
+            
+            document.getElementById('modalTitle').textContent = 'Confirmar Exclusão';
+            document.getElementById('modalMessage').textContent = `Tem certeza que deseja excluir o arquivo "${file.title}"? Esta ação não pode ser desfeita.`;
+            document.getElementById('modalConfirm').className = 'btn-danger';
+            document.getElementById('modalConfirm').textContent = 'Excluir';
+            
+            document.getElementById('modalConfirm').onclick = function() {
+                deleteFile();
+            };
+            
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        // Função para excluir arquivo
+        async function deleteFile() {
+            try {
+                filesDatabase = filesDatabase.filter(f => f.id !== currentFileToDelete);
+                saveToStorage();
+                
+                loadFilesList();
+                loadManageFilesList();
+                showMessage('success', 'Arquivo excluído com sucesso!');
+                document.getElementById('confirmModal').style.display = 'none';
+            } catch (error) {
+                showMessage('error', 'Erro ao excluir arquivo');
+                console.error(error);
+            }
+        }
+
+        // Função para editar arquivo
+        function editFile(fileId) {
+            const file = filesDatabase.find(f => f.id === fileId);
+            if (!file) return;
+            
+            currentFileToEdit = file;
+            
+            document.getElementById('modalTitle').textContent = 'Editar Arquivo';
+            document.getElementById('modalMessage').innerHTML = `
+                <div class="form-group">
+                    <label for="editTitle">Título</label>
+                    <input type="text" id="editTitle" value="${file.title}" class="full-width">
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Descrição</label>
+                    <textarea id="editDescription" rows="3" class="full-width">${file.description}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editSubscription">
+                        <input type="checkbox" id="editSubscription" ${file.requiresSubscription ? 'checked' : ''}> Requer inscrição
+                    </label>
+                </div>
+            `;
+            
+            document.getElementById('modalConfirm').className = 'btn-primary';
+            document.getElementById('modalConfirm').textContent = 'Salvar';
+            
+            document.getElementById('modalConfirm').onclick = function() {
+                file.title = document.getElementById('editTitle').value;
+                file.description = document.getElementById('editDescription').value;
+                file.requiresSubscription = document.getElementById('editSubscription').checked;
+                saveToStorage();
+                
+                loadFilesList();
+                loadManageFilesList();
+                showMessage('success', 'Arquivo atualizado com sucesso!');
+                document.getElementById('confirmModal').style.display = 'none';
+            };
+            
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        // Função para mostrar formulário de login
+        function showLoginForm() {
+            document.getElementById('loginFormContainer').style.display = 'block';
+            document.getElementById('adminLoginBtn').style.display = 'none';
+        }
+
+        // Função para esconder formulário de login
+        function hideLoginForm() {
+            document.getElementById('loginFormContainer').style.display = 'none';
+            document.getElementById('adminLoginBtn').style.display = 'inline-flex';
+        }
+
+        // Função para abrir abas do admin
+        function openAdminTab(evt, tabName) {
+            const tabContents = document.querySelectorAll('#adminSection .tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            const tabs = document.querySelectorAll('#adminSection .tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Função para fazer logout
+        function logout() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminSection').style.display = 'none';
+            document.getElementById('adminLoginBtn').style.display = 'inline-flex';
+            showMessage('success', 'Você saiu da área administrativa');
+        }
+
+        // Função para verificar login
+        function checkLogin(username, password) {
+            return username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password;
+        }
+
+        // Função para inscrever no canal
+        function subscribeToChannel() {
+            const youtubeWindow = window.open("https://www.youtube.com/@PASSITECH?sub_confirmation=1", "_blank");
+            
+            if (youtubeWindow) {
+                const btn = document.getElementById('subscribeButton');
+                btn.innerHTML = '<svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Inscrição confirmada!';
+                btn.style.background = 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)';
+                
+                // Marcar como inscrito e mostrar a plataforma
+                isSubscribed = true;
+                localStorage.setItem(SUBSCRIPTION_KEY, 'true');
+                setTimeout(() => {
+                    document.getElementById('subscribeScreen').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    loadFilesList();
+                }, 2000);
+            }
+        }
+
+        // Função para verificar se já está inscrito
+        function checkSubscription() {
+            isSubscribed = true;
+            localStorage.setItem(SUBSCRIPTION_KEY, 'true');
+            initiateDownload(currentFileToDownload);
+            document.getElementById('subscribeModal').style.display = 'none';
+        }
+
+        // Inicialização
+        function initializeApp() {
+            // Carregar dados do localStorage
+            loadFromStorage();
+            
+            // Verificar se já está inscrito para pular a tela de inscrição
+            if (isSubscribed) {
+                document.getElementById('subscribeScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+            }
+            
+            // Carregar listas
+            loadFilesList();
+            
+            // Configurar eventos
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (checkLogin(username, password)) {
+                    isAdminLoggedIn = true;
+                    hideLoginForm();
+                    document.getElementById('adminSection').style.display = 'block';
+                    document.getElementById('adminLoginBtn').style.display = 'none';
+                    loadManageFilesList();
+                    showMessage('success', 'Login realizado com sucesso!');
+                } else {
+                    showMessage('error', 'Usuário ou senha incorretos');
+                }
+            });
+            
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const title = document.getElementById('fileTitle').value;
+                const description = document.getElementById('fileDescription').value;
+                const fileInput = document.getElementById('fileUpload');
+                const requireSubscription = document.getElementById('requireSubscription').checked;
+                
+                if (!fileInput.files.length) {
+                    showMessage('error', 'Por favor, selecione um arquivo para upload.');
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                const fileName = file.name;
+                const fileSize = formatFileSize(file.size);
+                
+                // Mostrar barra de progresso
+                const progressContainer = document.querySelector('.progress-container');
+                const progressBar = document.getElementById('uploadProgress');
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                // Simular progresso
+                setTimeout(() => {
+                    progressBar.style.width = '50%';
+                    
+                    // Converter arquivo para Data URL
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        progressBar.style.width = '100%';
+                        
+                        // Adicionar o novo arquivo
+                        const newFile = {
+                            id: filesDatabase.length > 0 ? Math.max(...filesDatabase.map(f => f.id)) + 1 : 1,
+                            title: title,
+                            description: description,
+                            filename: fileName,
+                            size: fileSize,
+                            uploadDate: new Date().toISOString().split('T')[0],
+                            downloads: 0,
+                            requiresSubscription: requireSubscription,
+                            fileUrl: e.target.result
+                        };
+                        
+                        filesDatabase.push(newFile);
+                        saveToStorage();
+                        
+                        // Atualizar as listas
+                        loadFilesList();
+                        if (isAdminLoggedIn) {
+                            loadManageFilesList();
+                        }
+                        
+                        // Limpar o formulário
+                        document.getElementById('uploadForm').reset();
+                        progressContainer.style.display = 'none';
+                        
+                        showMessage('success', 'Arquivo enviado com sucesso!');
+                    };
+                    reader.readAsDataURL(file);
+                }, 500);
+            });
+            
+            document.getElementById('modalConfirm').addEventListener('click', function() {
+                // Esta função é redefinida dinamicamente quando necessário
+            });
+            
+            document.getElementById('modalCancel').addEventListener('click', () => {
+                document.getElementById('confirmModal').style.display = 'none';
+            });
+            
+            document.getElementById('subscribeBtn').addEventListener('click', subscribeToChannel);
+            document.getElementById('alreadySubscribed').addEventListener('click', checkSubscription);
+            
+            // Fechar modais ao clicar fora
+            window.addEventListener('click', (event) => {
+                if (event.target === document.getElementById('confirmModal')) {
+                    document.getElementById('confirmModal').style.display = 'none';
+                }
+                if (event.target === document.getElementById('subscribeModal')) {
+                    document.getElementById('subscribeModal').style.display = 'none';
+                }
+            });
+        }
+
+        // Verificar se o DOM está completamente carregado
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            // Documento já está pronto ou quase pronto
+            setTimeout(initializeApp, 1);
+        } else {
+            // Esperar pelo evento DOMContentLoaded
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        }
+    </script>
+</body>
+</html>
