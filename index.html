@@ -716,28 +716,7 @@
             } else {
                 // Dados iniciais padrão
                 filesDatabase = [
-                    {
-                        id: 1,
-                        title: "Manual de Instruções",
-                        description: "Manual completo do produto XYZ",
-                        filename: "manual_instrucoes.pdf",
-                        size: "2.4 MB",
-                        uploadDate: new Date().toISOString().split('T')[0],
-                        downloads: 0,
-                        requiresSubscription: false,
-                        fileUrl: null
-                    },
-                    {
-                        id: 2,
-                        title: "Ferramenta de Diagnóstico",
-                        description: "Software para diagnóstico de problemas",
-                        filename: "diagnostico_tool.exe",
-                        size: "15.7 MB",
-                        uploadDate: new Date().toISOString().split('T')[0],
-                        downloads: 0,
-                        requiresSubscription: true,
-                        fileUrl: null
-                    }
+               
                 ];
                 saveToStorage();
             }
