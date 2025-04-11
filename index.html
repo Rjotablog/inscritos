@@ -67,7 +67,6 @@
             max-width: 800px;
             margin: 20px auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            -webkit-backdrop-filter: blur(8px); /* Adicionado prefixo para Chrome */
             backdrop-filter: blur(8px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -347,9 +346,10 @@
 
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
-            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(46, 204, 113, 0)); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0)); }
         }
+
         /* Tela de inscrição */
         .subscribe-screen {
             position: fixed;
@@ -701,7 +701,7 @@
         let currentFileToDelete = null;
         let currentFileToEdit = null;
         let isAdminLoggedIn = false;
-        let isSubscribed = localStorage.getItem(SUBSCRIPTION_KEY) === 'true';
+        let isSubscribed = false;
 
         // Função para carregar dados do localStorage
         function loadFromStorage() {
@@ -709,6 +709,13 @@
             if (savedData) {
                 try {
                     filesDatabase = JSON.parse(savedData);
+                // Verificar e corrigir URLs de arquivos se necessário
+                    filesDatabase.forEach(file => {
+                        if (file.fileUrl && file.fileUrl.startsWith('blob:')) {
+                            // Corrigir URLs inválidas
+                            file.fileUrl = null;
+                        }
+                    });
                 } catch (e) {
                     console.error('Erro ao carregar dados do localStorage:', e);
                     resetDatabase();
@@ -716,7 +723,28 @@
             } else {
                 // Dados iniciais padrão
                 filesDatabase = [
-               
+                    {
+                        id: 1,
+                        title: "Manual de Instruções",
+                        description: "Manual completo do produto XYZ",
+                        filename: "manual_instrucoes.pdf",
+                        size: "2.4 MB",
+                        uploadDate: new Date().toISOString().split('T')[0],
+                        downloads: 0,
+                        requiresSubscription: false,
+                        fileUrl: null
+                    },
+                    {
+                        id: 2,
+                        title: "Ferramenta de Diagnóstico",
+                        description: "Software para diagnóstico de problemas",
+                        filename: "diagnostico_tool.exe",
+                        size: "15.7 MB",
+                        uploadDate: new Date().toISOString().split('T')[0],
+                        downloads: 0,
+                        requiresSubscription: true,
+                        fileUrl: null
+                    }
                 ];
                 saveToStorage();
             }
@@ -724,7 +752,15 @@
 
         // Função para salvar dados no localStorage
         function saveToStorage() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(filesDatabase));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(filesDatabase));
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    showMessage('error', 'Armazenamento cheio! Por favor, exclua alguns arquivos ou faça backup.');
+                } else {
+                    showMessage('error', 'Erro ao salvar dados: ' + e.message);
+                }
+            }
         }
 
         // Função para exportar banco de dados
@@ -796,6 +832,7 @@
             
             document.getElementById('modalConfirm').onclick = function() {
                 localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(SUBSCRIPTION_KEY);
                 loadFromStorage();
                 loadFilesList();
                 if (isAdminLoggedIn) {
@@ -951,12 +988,18 @@
                 }
                 
                 if (file.fileUrl) {
+                    // Criar link temporário para download
                     const a = document.createElement('a');
                     a.href = file.fileUrl;
                     a.download = file.filename;
                     document.body.appendChild(a);
                     a.click();
-                    document.body.removeChild(a);
+                    
+                    // Remover o link após um tempo
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(file.fileUrl);
+                    }, 100);
                     
                     showMessage('success', `Download iniciado: ${file.title}`);
                 } else {
@@ -1043,7 +1086,7 @@
             document.getElementById('confirmModal').style.display = 'flex';
         }
 
-        // Função para mostrar formulário de login
+       
         function showLoginForm() {
             document.getElementById('loginFormContainer').style.display = 'block';
             document.getElementById('adminLoginBtn').style.display = 'none';
@@ -1096,11 +1139,22 @@
                 // Marcar como inscrito e mostrar a plataforma
                 isSubscribed = true;
                 localStorage.setItem(SUBSCRIPTION_KEY, 'true');
-                setTimeout(() => {
-                    document.getElementById('subscribeScreen').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'block';
-                    loadFilesList();
-                }, 2000);
+                
+                // Se estiver na tela de inscrição inicial
+                if (document.getElementById('subscribeScreen').style.display !== 'none') {
+                    setTimeout(() => {
+                        document.getElementById('subscribeScreen').style.display = 'none';
+                        document.getElementById('mainContent').style.display = 'block';
+                        loadFilesList();
+                    }, 2000);
+                } 
+                // Se estiver no modal de download
+                else {
+                    document.getElementById('subscribeBtn').style.display = 'none';
+                    document.getElementById('downloadAfterSubscribe').style.display = 'block';
+                    document.getElementById('downloadLink').href = currentFileToDownload.fileUrl;
+                    document.getElementById('downloadLink').download = currentFileToDownload.filename;
+                }
             }
         }
 
@@ -1113,12 +1167,18 @@
         }
 
         // Inicialização
-        function initializeApp() {
+        document.addEventListener('DOMContentLoaded', () => {
             // Carregar dados do localStorage
             loadFromStorage();
             
-            // Verificar se já está inscrito para pular a tela de inscrição
-            if (isSubscribed) {
+            // Verificar se já está inscrito
+            isSubscribed = localStorage.getItem(SUBSCRIPTION_KEY) === 'true';
+            
+            // Se não estiver inscrito, mostrar tela de inscrição
+            if (!isSubscribed) {
+                document.getElementById('subscribeScreen').style.display = 'flex';
+                document.getElementById('mainContent').style.display = 'none';
+            } else {
                 document.getElementById('subscribeScreen').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
             }
@@ -1167,45 +1227,90 @@
                 progressContainer.style.display = 'block';
                 progressBar.style.width = '0%';
                 
+                // Aviso sobre arquivos grandes
+                if (file.size > 5242880) { // 5MB
+                    if (!confirm('Arquivos grandes podem causar problemas de performance. Deseja continuar?')) {
+                        progressContainer.style.display = 'none';
+                        return;
+                    }
+                }
+                
                 // Simular progresso
                 setTimeout(() => {
                     progressBar.style.width = '50%';
                     
                     // Converter arquivo para Data URL
                     const reader = new FileReader();
+                    
+                    reader.onloadstart = function() {
+                        console.log('Iniciando leitura do arquivo...');
+                    };
+                    
+                    reader.onprogress = function(e) {
+                        if (e.lengthComputable) {
+                            const percentLoaded = Math.round((e.loaded / e.total) * 100);
+                            progressBar.style.width = percentLoaded + '%';
+                        }
+                    };
+                    
                     reader.onload = function(e) {
                         progressBar.style.width = '100%';
                         
-                        // Adicionar o novo arquivo
-                        const newFile = {
-                            id: filesDatabase.length > 0 ? Math.max(...filesDatabase.map(f => f.id)) + 1 : 1,
-                            title: title,
-                            description: description,
-                            filename: fileName,
-                            size: fileSize,
-                            uploadDate: new Date().toISOString().split('T')[0],
-                            downloads: 0,
-                            requiresSubscription: requireSubscription,
-                            fileUrl: e.target.result
-                        };
-                        
-                        filesDatabase.push(newFile);
-                        saveToStorage();
-                        
-                        // Atualizar as listas
-                        loadFilesList();
-                        if (isAdminLoggedIn) {
-                            loadManageFilesList();
+                        try {
+                            // Adicionar o novo arquivo
+                            const newFile = {
+                                id: filesDatabase.length > 0 ? Math.max(...filesDatabase.map(f => f.id)) + 1 : 1,
+                                title: title,
+                                description: description,
+                                filename: fileName,
+                                size: fileSize,
+                                uploadDate: new Date().toISOString().split('T')[0],
+                                downloads: 0,
+                                requiresSubscription: requireSubscription,
+                                fileUrl: e.target.result
+                            };
+                            
+                            // Verificar se há espaço suficiente
+                            const storedData = localStorage.getItem(STORAGE_KEY) || '';
+                            const newData = JSON.stringify([...filesDatabase, newFile]);
+                            
+                            if (newData.length > 5000000) { // ~5MB
+                                showMessage('warning', 'Atenção: O armazenamento está ficando cheio. Arquivos muito grandes podem não ser salvos corretamente.');
+                            }
+                            
+                            filesDatabase.push(newFile);
+                            saveToStorage();
+                            
+                            // Atualizar as listas
+                            loadFilesList();
+                            if (isAdminLoggedIn) {
+                                loadManageFilesList();
+                            }
+                            
+                            // Limpar o formulário
+                            document.getElementById('uploadForm').reset();
+                            progressContainer.style.display = 'none';
+                            
+                            showMessage('success', 'Arquivo enviado com sucesso!');
+                        } catch (error) {
+                            showMessage('error', 'Erro ao processar o arquivo: ' + error.message);
+                            console.error(error);
+                            progressContainer.style.display = 'none';
                         }
-                        
-                        // Limpar o formulário
-                        document.getElementById('uploadForm').reset();
-                        progressContainer.style.display = 'none';
-                        
-                        showMessage('success', 'Arquivo enviado com sucesso!');
                     };
+                    
+                    reader.onerror = function() {
+                        showMessage('error', 'Erro ao ler o arquivo. Tente um arquivo menor.');
+                        progressContainer.style.display = 'none';
+                    };
+                    
+                    reader.onabort = function() {
+                        showMessage('warning', 'Upload cancelado.');
+                        progressContainer.style.display = 'none';
+                    };
+                    
                     reader.readAsDataURL(file);
-                }, 500);
+                }, 100);
             });
             
             document.getElementById('modalConfirm').addEventListener('click', function() {
@@ -1228,16 +1333,7 @@
                     document.getElementById('subscribeModal').style.display = 'none';
                 }
             });
-        }
-
-        // Verificar se o DOM está completamente carregado
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            // Documento já está pronto ou quase pronto
-            setTimeout(initializeApp, 1);
-        } else {
-            // Esperar pelo evento DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        }
+        });
     </script>
 </body>
 </html>
