@@ -264,21 +264,20 @@
             line-height: 1.6;
         }
         
-        /* Efeitos de confete */
+        /* Efeitos de confete melhorados */
         .confetti {
             position: absolute;
-            width: 12px;
-            height: 12px;
+            width: 15px;
+            height: 15px;
             opacity: 0;
             z-index: 10;
-            animation: confettiFall 3s ease-out forwards;
+            animation: confettiFall 5s ease-out forwards;
             background: linear-gradient(45deg, 
                 var(--primary-green), 
                 var(--accent-blue), 
                 var(--accent-yellow), 
                 var(--accent-red));
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         
         @keyframes confettiFall {
@@ -287,9 +286,30 @@
                 opacity: 1;
             }
             100% {
-                transform: translateY(100vh) rotate(720deg) scale(0.5);
+                transform: translateY(100vh) rotate(1080deg) scale(0.5);
                 opacity: 0;
             }
+        }
+        
+        /* Estrelas de confete */
+        .confetti.star {
+            clip-path: polygon(
+                50% 0%,
+                61% 35%,
+                98% 35%,
+                68% 57%,
+                79% 91%,
+                50% 70%,
+                21% 91%,
+                32% 57%,
+                2% 35%,
+                39% 35%
+            );
+        }
+        
+        /* Triângulos de confete */
+        .confetti.triangle {
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
         
         /* Animações */
@@ -382,7 +402,8 @@
         // Cores para os confetes
         const confettiColors = [
             '#2ecc71', '#3498db', '#e74c3c', 
-            '#f1c40f', '#9b59b6', '#1abc9c'
+            '#f1c40f', '#9b59b6', '#1abc9c',
+            '#e91e63', '#00bcd4', '#ff5722'
         ];
         
         // Obter link de download da URL
@@ -391,16 +412,24 @@
             return params.get("link");
         }
         
-        // Criar efeito de confete
+        // Criar efeito de confete melhorado
         function createConfetti() {
-            const container = document.querySelector('.subscribe-screen');
+            const container = document.querySelector('body');
+            const confettiCount = 150; // Aumentei o número de confetes
             
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < confettiCount; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 
+                // Adicionar formas diferentes aleatoriamente
+                if (Math.random() > 0.7) {
+                    confetti.classList.add('star');
+                } else if (Math.random() > 0.5) {
+                    confetti.classList.add('triangle');
+                }
+                
                 // Posição aleatória
-                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.left = Math.random() * 100 + 'vw';
                 
                 // Cor aleatória
                 confetti.style.background = confettiColors[
@@ -408,24 +437,58 @@
                 ];
                 
                 // Tamanho aleatório
-                const size = Math.random() * 10 + 8;
+                const size = Math.random() * 15 + 5;
                 confetti.style.width = size + 'px';
                 confetti.style.height = size + 'px';
                 
                 // Animação única
-                confetti.style.animationDelay = Math.random() * 2 + 's';
-                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                const animationDuration = Math.random() * 3 + 3;
+                const animationDelay = Math.random() * 2;
                 
-                // Forma aleatória (círculo ou triângulo)
-                if (Math.random() > 0.7) {
-                    confetti.style.borderRadius = '0';
-                    confetti.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
-                }
+                confetti.style.animationDelay = animationDelay + 's';
+                confetti.style.animationDuration = animationDuration + 's';
+                
+                // Rotação inicial aleatória
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                // Velocidade de queda aleatória
+                confetti.style.animationTimingFunction = `cubic-bezier(${Math.random()},${Math.random()},${Math.random()},${Math.random()})`;
                 
                 container.appendChild(confetti);
                 
                 // Remover após animação
-                setTimeout(() => confetti.remove(), 5000);
+                setTimeout(() => confetti.remove(), (animationDuration + animationDelay) * 1000);
+            }
+            
+            // Adicionar alguns confetes maiores para destaque
+            for (let i = 0; i < 20; i++) {
+                const largeConfetti = document.createElement('div');
+                largeConfetti.className = 'confetti';
+                
+                if (Math.random() > 0.5) {
+                    largeConfetti.classList.add('star');
+                }
+                
+                largeConfetti.style.left = Math.random() * 100 + 'vw';
+                largeConfetti.style.background = confettiColors[
+                    Math.floor(Math.random() * confettiColors.length)
+                ];
+                
+                const size = Math.random() * 25 + 15;
+                largeConfetti.style.width = size + 'px';
+                largeConfetti.style.height = size + 'px';
+                
+                const animationDuration = Math.random() * 4 + 4;
+                const animationDelay = Math.random() * 1;
+                
+                largeConfetti.style.animationDelay = animationDelay + 's';
+                largeConfetti.style.animationDuration = animationDuration + 's';
+                largeConfetti.style.opacity = '0.9';
+                largeConfetti.style.boxShadow = '0 0 10px rgba(255,255,255,0.7)';
+                
+                container.appendChild(largeConfetti);
+                
+                setTimeout(() => largeConfetti.remove(), (animationDuration + animationDelay) * 1000);
             }
         }
         
@@ -464,12 +527,16 @@
                 Inscrição Confirmada!
             `;
             
-            // Efeito visual
+            // Efeito visual melhorado
             createConfetti();
+            
+            // Criar mais confetes após um delay
+            setTimeout(createConfetti, 800);
+            setTimeout(createConfetti, 1500);
             
             // Vibrar dispositivo (se suportado)
             if (navigator.vibrate) {
-                navigator.vibrate([100, 50, 100]);
+                navigator.vibrate([100, 50, 100, 50, 100]);
             }
             
             // Redirecionar após delay
